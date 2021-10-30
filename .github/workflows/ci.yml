@@ -1,0 +1,38 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Fetch gumbo
+      uses: actions/checkout@v2
+      with:
+        repository: google/gumbo-parser
+        path: gumbo-src
+
+    - name: Install gumbo
+      working-directory: gumbo-src
+      run: |
+        ./autogen.sh
+        ./configure --prefix "$GITHUB_WORKSPACE/gumbo-prefix"
+        make install
+
+    - name: Configure
+      env:
+        PKG_CONFIG_PATH: ${{ github.workspace }}/gumbo-prefix/lib/pkgconfig
+      run: cmake --preset=ci-ubuntu
+
+    - name: Build
+      run: cmake --build build -j 2
+
+    - name: Install
+      run: cmake --install build --prefix prefix
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure -j 2

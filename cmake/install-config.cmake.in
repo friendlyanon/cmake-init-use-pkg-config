@@ -1,0 +1,59 @@
+#[=======================================================================[.rst:
+use-pkg-config
+--------------
+
+This config file provides the ``use-pkg-config`` package.  This package depends
+on the `gumbo-parser library <https://github.com/google/gumbo-parser>`_.
+This dependency does not support clients using CMake, so please make sure you
+have read about the `Input Variables`_ of this package.
+
+IMPORTED Targets
+^^^^^^^^^^^^^^^^
+
+``use-pkg-config::use-pkg-config``
+  The main target of this package.
+
+Input Variables
+^^^^^^^^^^^^^^^
+
+Because ``gumbo`` does not support clients using CMake, this package provides
+the user with a find module and additional variables to customize the
+resolution of this transitive dependency:
+
+``gumbo_TARGET_NAME`` (Default: ``@use-pkg-config_GUMBO_TARGET_NAME_IN_CONFIG@``)
+  The name of the target exported from the ``gumbo`` package the main target
+  should link to.
+
+``gumbo_PACKAGE_NAME`` (Default: ``@use-pkg-config_GUMBO_PACKAGE_NAME_IN_CONFIG@``)
+  The name with which the ``gumbo`` package should be looked up.
+
+``use-pkg-config_USE_PROVIDED_gumbo`` (Default: ``ON``)
+  If ``use-pkg-config`` was installed with
+  ``use-pkg-config_GUMBO_PROVIDE_FIND_MODULE`` enabled, then this variable
+  will make use of the find module installed along with this config file.
+  Refer to the documentation in the find module for further variables to
+  providing hints to finding ``gumbo``.
+#]=======================================================================]
+
+if("@use-pkg-config_GUMBO_PROVIDE_FIND_MODULE@")
+  set(var use-pkg-config_USE_PROVIDED_gumbo)
+  if(NOT DEFINED "${var}" OR "${${var}}")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/find")
+  endif()
+endif()
+
+if(NOT DEFINED gumbo_PACKAGE_NAME)
+  set(gumbo_PACKAGE_NAME @use-pkg-config_GUMBO_PACKAGE_NAME_IN_CONFIG@)
+endif()
+if(NOT DEFINED gumbo_TARGET_NAME)
+  set(gumbo_TARGET_NAME @use-pkg-config_GUMBO_TARGET_NAME_IN_CONFIG@)
+endif()
+
+include(CMakeFindDependencyMacro)
+find_dependency("${gumbo_PACKAGE_NAME}")
+
+include("${CMAKE_CURRENT_LIST_DIR}/use-pkg-configTargets.cmake")
+set_property(
+    TARGET use-pkg-config::use-pkg-config APPEND PROPERTY
+    INTERFACE_LINK_LIBRARIES "${gumbo_TARGET_NAME}"
+)
