@@ -88,9 +88,8 @@ if(gumbo_FOUND AND NOT TARGET gumbo::gumbo)
       INTERFACE_INCLUDE_DIRECTORIES "${gumbo_INCLUDE_DIR}"
   )
   if(EXISTS "${gumbo_LIBRARY}")
-    set_target_properties(
-        gumbo::gumbo PROPERTIES
-        IMPORTED_LINK_INTERFACE_LANGUAGES C
+    set_property(
+        TARGET gumbo::gumbo PROPERTY
         IMPORTED_LOCATION "${gumbo_LIBRARY}"
     )
   endif()
