@@ -78,7 +78,7 @@ find_package_handle_standard_args(
 )
 
 # Create a library target only if the above checks passed
-if(NOT TARGET gumbo::gumbo)
+if(gumbo_FOUND AND NOT TARGET gumbo::gumbo)
   # Can't easily tell how gumbo was compiled, so just default to UNKNOWN
   # library type and CMake will make a best effort guess
   add_library(gumbo::gumbo UNKNOWN IMPORTED)
